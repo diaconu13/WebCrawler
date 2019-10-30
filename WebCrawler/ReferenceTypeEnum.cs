@@ -2,7 +2,7 @@
 {
     internal enum ReferenceTypeEnum
     {
-        External,
+        Absolute,
         Relative
     }
 }
