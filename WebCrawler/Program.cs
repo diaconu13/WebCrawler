@@ -13,13 +13,14 @@ namespace WebCrawler
     {
         private int _deepness = 0;
         private int _allowedDeepthness = 0;
-        
-        //todo try to fins a recursive solution
+        private static string _domain = "";
+
+        //todo try to find a recursive solution
 
         static async Task Main(string[] args)
         {
-            string domain = "http://www.eloquentix.com/";
-            Uri uri = new Uri(domain);
+            _domain = "http://www.eloquentix.com/";
+            Uri uri = new Uri(_domain);
 
             if (!uri.IsAbsoluteUri)
             {
@@ -46,32 +47,53 @@ namespace WebCrawler
 
         private static void LoadResource(References reference)
         {
-            if (reference.ReferenceType == ReferenceTypeEnum.Absolute)
+            switch (reference.ReferenceType)
             {
-                GetUrlContents(reference.Url);
+                case ReferenceTypeEnum.Absolute:
+                    GetUrlContents(reference.Url);
+                    break;
+                case ReferenceTypeEnum.Relative:
+                    if (reference.Url.IsAbsoluteUri && reference.Url.AbsolutePath.Length > 1)//prevent same \
+                    {
+                        //try to combine and get one nice absolute url
+                        var uri = new Uri(_domain + reference.Url);
+                        GetUrlContents(uri);
+                    }
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
         private static async void GetUrlContents(Uri uri)
         {
-            HttpClientHandler httpHandler = new HttpClientHandler
-            { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate };
-            using (var client = new HttpClient(httpHandler))
+            try
             {
-                client.BaseAddress = uri;
+                HttpClientHandler httpHandler = new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate };
 
-                HttpResponseMessage response = await client.GetAsync("/");
-                response.EnsureSuccessStatusCode();
+                using (var client = new HttpClient(httpHandler))
+                {
+                    client.BaseAddress = uri;
 
-                string result = await response.Content.ReadAsStringAsync();
+                    HttpResponseMessage response = await client.GetAsync("/");
+                    response.EnsureSuccessStatusCode();
 
-                EnsureDirectoryExists(uri);
+                    string result = await response.Content.ReadAsStringAsync();
 
-                File.WriteAllText(uri.DnsSafeHost + "/index.html", result);
-               
-                LoadResources(result);
+                    EnsureDirectoryExists(uri);
 
+                    File.WriteAllText(uri.DnsSafeHost + "/index.html", result);
+
+                    LoadResources(result);
+
+                }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
         }
 
         /// <summary>
@@ -123,7 +145,8 @@ namespace WebCrawler
 
                 try
                 {
-                    references.Add(new References(new Uri(url, UriKind.RelativeOrAbsolute), name));
+                    var uri = new Uri(url, UriKind.RelativeOrAbsolute);
+                    references.Add(new References(uri, name));
                 }
                 catch (Exception e)
                 {
