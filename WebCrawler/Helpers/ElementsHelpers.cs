@@ -8,7 +8,7 @@ namespace WebCrawler.Helpers
 {
     static class ElementsHelpers
     {
-        public static Boolean ElementHasReference(string element)
+        public static bool ElementHasReference(string element)
         {
             return element.Length > 0 && element.Contains(" href=") || element.Contains(" src=");
         }
@@ -42,6 +42,9 @@ namespace WebCrawler.Helpers
         {
             List<References> references = new List<References>();
             if (!ElementHasReference(row)) return references;
+
+            //todo this is not very accurate since it asumes that will be only two items in list all the time ... (src || href)="value"
+            //most of the time is ok ... but still
 
             var sources = row.Split(' ').ToList().Select(s => s.Split('=')).ToList();
             var itemsWithReferences = sources.Find(l => l.Any(s => s.Contains("href") || s.Contains("src")));

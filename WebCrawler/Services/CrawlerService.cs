@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using WebCrawler.Helpers;
 
@@ -63,15 +65,45 @@ namespace WebCrawler.Services
                     await GetUrlContents(reference.Url);
                     break;
                 case ReferenceTypeEnum.Relative:
-                    if (!HasAbsoluteUrl(reference))//prevent same \
+                    if (!HasAbsoluteUrl(reference) && IsNotNavigationLink(reference))//prevent same \
                     {
+                        //SanitizeUrl(reference);
                         //try to combine and get one nice absolute url
-                        var uri = new Uri(url.AbsoluteUri + reference.Url);
+                        var uri = SanitizeUri(reference, url);
                         await GetUrlContents(uri);
                     }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private Uri SanitizeUri(References reference, Uri url)
+        {
+                string absoluteUri;
+            if (HasAbsoluteUrl(reference))
+            {
+                absoluteUri = url.Scheme + "://" + url.Host + url.AbsolutePath;
+            }
+            else
+            {
+                absoluteUri = url.Scheme + "://" + url.Host + reference.Url.OriginalString;
+            }
+           
+            //absoluteUri = absoluteUri.Remove(absoluteUri.LastIndexOf("//"), 1);
+            return new Uri(absoluteUri, UriKind.RelativeOrAbsolute);
+        }
+
+        private bool IsNotNavigationLink(References reference)
+        {
+            return !reference.Url.OriginalString.Contains("#");
+        }
+
+        private static void SanitizeUrl(References reference)
+        {
+            if (reference.Url.OriginalString.StartsWith("/"))
+            {
+                reference.Url = new Uri(reference.Url.OriginalString.Remove(0, 1));
             }
         }
 
