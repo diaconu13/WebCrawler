@@ -65,10 +65,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\CommandsInterpreter.cs" />
+    <Compile Include="Helpers\ElementsHelpers.cs" />
+    <Compile Include="Services\CrawlerService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="References.cs" />
     <Compile Include="ReferenceTypeEnum.cs" />
+    <Compile Include="Services\ICrawlerService.cs" />
+    <Compile Include="Services\IPersistenceService.cs" />
+    <Compile Include="Services\PersistenceService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -86,5 +92,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
