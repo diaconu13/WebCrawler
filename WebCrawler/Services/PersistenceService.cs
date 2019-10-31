@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace WebCrawler.Services
@@ -11,7 +12,7 @@ namespace WebCrawler.Services
         /// </summary>
         /// <param name="uri"></param>
         /// <param name="result"></param>
-        public async Task PersistData(Uri uri, string result)
+        public async Task<string> PersistData(Uri uri, string result)
         {
             DirectoryInfo destination = EnsureDirectoryExists(uri);
 
@@ -19,53 +20,21 @@ namespace WebCrawler.Services
 
             var path = Path.Combine(destination.FullName, fileName);
             File.WriteAllText(path, result);
+            return path;
         }
 
         private string CalculateFileName(Uri uri)
         {
             string fileName = "index.html";
 
-            if (IsProbablyAFile(uri))// probably is a file
-            {
-                if (IsAFileInRoot(uri)) // is a file in root
-                {
-                    // http://www.eloquentix.com/favicon.png
-                    if (uri.Segments.Length == 1)
-                    {
-                        return uri.Segments[1];
-                    }
-                }
-
-                var lastIndexOf = uri.AbsolutePath.LastIndexOf("/");
-                string foldersStructure = uri.AbsolutePath.Remove(lastIndexOf, uri.AbsolutePath.Length - lastIndexOf);
-
-            }
-
-            return fileName;
+            return IsProbablyAFile(uri) ? uri.Segments.ToList().Last() : fileName;
         }
 
-        private string CalculateFilePath(Uri uri, string result, string fileName)
+        internal DirectoryInfo EnsureDirectoryExists(Uri uri)
         {
-            // 
-            string path;
-            if (uri.LocalPath.Length > 1)
+            if (IsProbablyAFile(uri))
             {
-                path = uri.DnsSafeHost + uri.LocalPath;
-                File.WriteAllText(path, result);
-            }
-            else
-            {
-                path = uri.DnsSafeHost + fileName;
-            }
-
-            return path;
-        }
-
-        private DirectoryInfo EnsureDirectoryExists(Uri uri)
-        {
-            if (IsProbablyAFile(uri))// probably is a file
-            {
-                if (IsAFileInRoot(uri)) // is a file in root
+                if (IsAFileInRoot(uri))
                 {
                     return EnsureRootDirectory(uri);
                 }
@@ -75,7 +44,10 @@ namespace WebCrawler.Services
                 return Directory.CreateDirectory(uri.DnsSafeHost + foldersStructure);
             }
 
-            if (!IsProbablyAFile(uri) && !IsAFileInRoot(uri))
+            var notAFile = !IsProbablyAFile(uri);
+            var isNotRoot = uri.AbsolutePath.Length > 1;
+            var isAFileInRoot = IsAFileInRoot(uri);
+            if (notAFile && isNotRoot && isAFileInRoot)
             {
                 //AbsoluteUri = "http://www.eloquentix.com/case_studies_and_clients/"
                 // http://www.eloquentix.com/jobs"
@@ -94,8 +66,8 @@ namespace WebCrawler.Services
 
         private static bool IsAFileInRoot(Uri uri)
         {
-            //http://www.eloquentix.com/favicon.png
-            return uri.AbsolutePath.IndexOf("/", StringComparison.Ordinal) == 1;
+            //http://www.eloquentix.com/favicon.png not http://www.eloquentix.com/ui/stylesheets/compiled.css
+            return uri.AbsolutePath.IndexOf("/", StringComparison.Ordinal) == 0 && uri.Segments.Length <= 2;
         }
 
         private static bool IsProbablyAFile(Uri uri)

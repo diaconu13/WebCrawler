@@ -5,6 +5,6 @@ namespace WebCrawler.Services
 {
     public interface IPersistenceService
     {
-        Task PersistData(Uri uri, string result);
+        Task<string> PersistData(Uri uri, string result);
     }
 }
