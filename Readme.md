@@ -47,6 +47,10 @@ To be continued........
 
 ## Architecture
 
+To be detailed
+
+https://github.com/diaconu13/WebCrawler/blob/master/architecture.png
+
 ## Getting Started
 
 The project is a console application that will go throw a website and download the page and all related dependencies, scripts and related pages
