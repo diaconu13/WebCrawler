@@ -7,6 +7,8 @@ namespace WebCrawler.Services
 {
     public class PersistenceService : IPersistenceService
     {
+        private const string DefaultFileName= "index.html";
+
         /// <summary>
         /// Save Data as a file based on the uri name
         /// </summary>
@@ -25,9 +27,7 @@ namespace WebCrawler.Services
 
         private string CalculateFileName(Uri uri)
         {
-            string fileName = "index.html";
-
-            return IsProbablyAFile(uri) ? uri.Segments.ToList().Last() : fileName;
+            return IsProbablyAFile(uri) ? uri.Segments.ToList().Last() : DefaultFileName;
         }
 
         internal DirectoryInfo EnsureDirectoryExists(Uri uri)
@@ -39,21 +39,20 @@ namespace WebCrawler.Services
                     return EnsureRootDirectory(uri);
                 }
 
-                var lastIndexOf = uri.AbsolutePath.LastIndexOf("/");
+                var lastIndexOf = uri.AbsolutePath.LastIndexOf("/", StringComparison.Ordinal);
                 string foldersStructure = uri.AbsolutePath.Remove(lastIndexOf, uri.AbsolutePath.Length - lastIndexOf);
                 return Directory.CreateDirectory(uri.DnsSafeHost + foldersStructure);
             }
-
-            var notAFile = !IsProbablyAFile(uri);
             var isNotRoot = uri.AbsolutePath.Length > 1;
             var isAFileInRoot = IsAFileInRoot(uri);
-            if (notAFile && isNotRoot && isAFileInRoot)
+
+            if (isNotRoot && isAFileInRoot)
             {
                 //AbsoluteUri = "http://www.eloquentix.com/case_studies_and_clients/"
                 // http://www.eloquentix.com/jobs"
                 // this is a link to a html page
 
-                string folderName = uri.Segments[1];
+                string folderName = uri.Segments.Last();
                 var info = new DirectoryInfo(uri.DnsSafeHost);
 
                 string path = Path.Combine(info.FullName, folderName);
@@ -61,13 +60,15 @@ namespace WebCrawler.Services
                 return Directory.CreateDirectory(path);
 
             }
+
             return EnsureRootDirectory(uri);// this is root dir "/"
         }
 
         private static bool IsAFileInRoot(Uri uri)
         {
-            //http://www.eloquentix.com/favicon.png not http://www.eloquentix.com/ui/stylesheets/compiled.css
-            return uri.AbsolutePath.IndexOf("/", StringComparison.Ordinal) == 0 && uri.Segments.Length <= 2;
+           
+                //http://www.eloquentix.com/favicon.png not http://www.eloquentix.com/ui/stylesheets/compiled.css
+                return uri.AbsolutePath.IndexOf("/", StringComparison.Ordinal) == 0 && uri.Segments.Length <= 2;
         }
 
         private static bool IsProbablyAFile(Uri uri)

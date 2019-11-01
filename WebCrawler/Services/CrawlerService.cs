@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using WebCrawler.Helpers;
 
@@ -36,6 +34,7 @@ namespace WebCrawler.Services
 
                     await _persistenceService.PersistData(uri, result);
 
+                    // in order for the paths to be corrected as absolute this should be done before _persistenceService.PersistData so data will be correctly persisted once
                     LoadResources(result, uri);
                 }
             }
@@ -43,7 +42,6 @@ namespace WebCrawler.Services
             {
                 Console.WriteLine(e);
             }
-
         }
 
 

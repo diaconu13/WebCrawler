@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using WebCrawler.Helpers;
 using WebCrawler.Services;
 
 
@@ -8,21 +9,18 @@ namespace WebCrawler
 {
     class Program
     {
-        private int _deepness = 0;
-        private int _allowedDeepthness = 0;
-        private static string _domain = "";
-
-        //todo try to find a recursive solution
-
         static async Task Main(string[] args)
         {
-            _domain = "http://www.eloquentix.com/";
-            Uri uri = new Uri(_domain);
 
+            CommandsInterpreter interpreter = new CommandsInterpreter();
+            Commands commands = interpreter.ParseCommand(args);
+            
+            Uri uri = new Uri(commands.Address);
 
             if (!uri.IsAbsoluteUri)
             {
                 Console.WriteLine("The uri format is not correct. Must be of form http(s)://www.domain.com");
+                Console.WriteLine("Nothing was Done!");
                 return;
             }
 

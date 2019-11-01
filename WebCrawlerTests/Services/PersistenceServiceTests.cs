@@ -1,20 +1,24 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using WebCrawler.Helpers;
 
 namespace WebCrawler.Services.Tests
 {
     [TestClass()]
     public class PersistenceServiceTests
     {
+
+
         [TestInitialize]
         public void Setup()
         {
-
+            // not sure yet what needs to be prepared before tests run
         }
 
         [TestMethod()]
-        public async Task PersistData_Root_Page_Persistence_Test()
+        public async Task PersistenceService_PersistData_Root_Page_Persistence_Test()
         {
             //Arrange
             IPersistenceService persistenceService = new PersistenceService();
@@ -26,10 +30,10 @@ namespace WebCrawler.Services.Tests
             Assert.IsTrue(path.EndsWith(@"WebCrawlerTests\bin\Debug\www.eloquentix.com\index.html"));
         }
 
-        
+
 
         [TestMethod()]
-        public async Task PersistData_Favicon_Local_Persistence_Test()
+        public async Task PersistenceService_PersistData_Favicon_Local_Persistence_Test()
         {
             //Arrange
             IPersistenceService persistenceService = new PersistenceService();
@@ -43,21 +47,21 @@ namespace WebCrawler.Services.Tests
 
 
         [TestMethod()]
-        public async Task PersistData_CssOnFoldersTree_Local_Persistence_Test()
+        public async Task PersistenceService_PersistData_CssOnFoldersTree_Local_Persistence_Test()
         {
             //Arrange
             IPersistenceService persistenceService = new PersistenceService();
 
             //Act
             string path = await persistenceService.PersistData(new Uri("http://www.eloquentix.com/ui/stylesheets/compiled.css"), "some css data");
-            
+
             //Assert
             Assert.IsTrue(path.EndsWith(@"WebCrawlerTests\bin\Debug\www.eloquentix.com\ui\stylesheets\compiled.css"));
         }
 
 
         [TestMethod()]
-        public async Task PersistData_CaseStudiesAndClientsPagePersistence_Test()
+        public async Task PersistenceService_PersistData_CaseStudiesAndClientsPagePersistence_Test()
         {
             //Arrange
             IPersistenceService persistenceService = new PersistenceService();
@@ -67,6 +71,41 @@ namespace WebCrawler.Services.Tests
 
             //Assert
             Assert.IsTrue(path.EndsWith(@"WebCrawlerTests\bin\Debug\www.eloquentix.com\case_studies_and_clients\index.html"));
+        }
+
+
+        [TestMethod()]
+        public void CommandsInterpreter_ParseCommand_ParseAllCommands_Test()
+        {
+            //Arrange
+            CommandsInterpreter interpreter = new CommandsInterpreter();
+            Commands expectedCommands = new Commands()
+            {
+                Address = "http://www.eloquentix.com/",
+                Destination = @"C:\Users\dan.diaconu\source\repos\WebCrawler\WebCrawlerTests\bin\Debug",
+                AllowExternal = true,
+                Depth = 2
+            };
+            string stringCommand = "--allowExternal --address:http://www.eloquentix.com/ --destination:C:\\Users\\dan.diaconu\\source\\repos\\WebCrawler\\WebCrawlerTests\\bin\\Debug --depth:2";
+            string[] actualCommand = stringCommand.Split(' ');
+
+            //Act
+            Commands result = interpreter.ParseCommand(actualCommand);
+
+            //Assert
+            Assert.AreEqual(expectedCommands.AllowExternal, result.AllowExternal);
+            Assert.AreEqual(expectedCommands.Address, result.Address);
+            Assert.AreEqual(expectedCommands.Depth, result.Depth);
+            Assert.AreEqual(expectedCommands.Destination, result.Destination);
+        }
+
+        [TestCleanup]
+        public void TearDown()
+        {
+            if (Directory.Exists("www.eloquentix.com"))
+            {
+                Directory.Delete("www.eloquentix.com", true);
+            }
         }
     }
 }
