@@ -26,10 +26,12 @@ namespace WebCrawler
 
             var serviceProvider = new ServiceCollection()
                 .AddSingleton<IPersistenceService, PersistenceService>()
+                .AddSingleton(commands)
                 .AddSingleton<ICrawlerService, CrawlerService>()
                 .BuildServiceProvider();
 
             ICrawlerService crawlerService = serviceProvider.GetService<ICrawlerService>();
+            
             await crawlerService.GetUrlContents(uri);
 
             Console.WriteLine($"Downloading from {uri.Host}...");

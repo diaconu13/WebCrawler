@@ -2,12 +2,19 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using WebCrawler.Helpers;
 
 namespace WebCrawler.Services
 {
     public class PersistenceService : IPersistenceService
     {
-        private const string DefaultFileName= "index.html";
+        private readonly Commands _commands;
+        private const string DefaultFileName = "index.html";
+
+        public PersistenceService(Commands commands)
+        {
+            _commands = commands;
+        }
 
         /// <summary>
         /// Save Data as a file based on the uri name
@@ -66,9 +73,9 @@ namespace WebCrawler.Services
 
         private static bool IsAFileInRoot(Uri uri)
         {
-           
-                //http://www.eloquentix.com/favicon.png not http://www.eloquentix.com/ui/stylesheets/compiled.css
-                return uri.AbsolutePath.IndexOf("/", StringComparison.Ordinal) == 0 && uri.Segments.Length <= 2;
+
+            //http://www.eloquentix.com/favicon.png not http://www.eloquentix.com/ui/stylesheets/compiled.css
+            return uri.AbsolutePath.IndexOf("/", StringComparison.Ordinal) == 0 && uri.Segments.Length <= 2;
         }
 
         private static bool IsProbablyAFile(Uri uri)
@@ -79,8 +86,9 @@ namespace WebCrawler.Services
 
         private DirectoryInfo EnsureRootDirectory(Uri uri)
         {
-            if (Directory.Exists(uri.DnsSafeHost)) return new DirectoryInfo(uri.DnsSafeHost);
-            var dir = Directory.CreateDirectory(uri.DnsSafeHost);
+            string path = Path.Combine(_commands.Destination, uri.DnsSafeHost);
+            if (Directory.Exists(path)) return new DirectoryInfo(uri.DnsSafeHost);
+            var dir = Directory.CreateDirectory(path);
             Console.WriteLine("Created directory " + dir.FullName);
             return dir;
         }

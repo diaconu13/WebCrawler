@@ -9,19 +9,27 @@ namespace WebCrawler.Services.Tests
     [TestClass()]
     public class PersistenceServiceTests
     {
+        private Commands _commands;
 
 
         [TestInitialize]
         public void Setup()
         {
             // not sure yet what needs to be prepared before tests run
+            this._commands = new Commands()
+            {
+                Address = "http://www.eloquentix.com/",
+                Destination = @"C:\Users\dan.diaconu\source\repos\WebCrawler\WebCrawlerTests\bin\Debug",
+                AllowExternal = true,
+                Depth = 2
+            };
         }
 
         [TestMethod()]
         public async Task PersistenceService_PersistData_Root_Page_Persistence_Test()
         {
             //Arrange
-            IPersistenceService persistenceService = new PersistenceService();
+            IPersistenceService persistenceService = new PersistenceService(_commands);
 
             //Act
             string path = await persistenceService.PersistData(new Uri("http://www.eloquentix.com/"), "some html data");
@@ -30,17 +38,16 @@ namespace WebCrawler.Services.Tests
             Assert.IsTrue(path.EndsWith(@"WebCrawlerTests\bin\Debug\www.eloquentix.com\index.html"));
         }
 
-
-
         [TestMethod()]
         public async Task PersistenceService_PersistData_Favicon_Local_Persistence_Test()
         {
+           
             //Arrange
-            IPersistenceService persistenceService = new PersistenceService();
+            IPersistenceService persistenceService = new PersistenceService(_commands);
 
             //Act
             string path = await persistenceService.PersistData(new Uri("http://www.eloquentix.com/favicon.png"), "some html data");
-            //C:\\Users\\dan.diaconu\\source\\repos\\WebCrawler\\WebCrawlerTests\\bin\\Debug\\www.eloquentix.com\\favicon.png
+            
             //Assert
             Assert.IsTrue(path.EndsWith(@"WebCrawlerTests\bin\Debug\www.eloquentix.com\favicon.png"));
         }
@@ -50,7 +57,7 @@ namespace WebCrawler.Services.Tests
         public async Task PersistenceService_PersistData_CssOnFoldersTree_Local_Persistence_Test()
         {
             //Arrange
-            IPersistenceService persistenceService = new PersistenceService();
+            IPersistenceService persistenceService = new PersistenceService(_commands);
 
             //Act
             string path = await persistenceService.PersistData(new Uri("http://www.eloquentix.com/ui/stylesheets/compiled.css"), "some css data");
@@ -64,7 +71,7 @@ namespace WebCrawler.Services.Tests
         public async Task PersistenceService_PersistData_CaseStudiesAndClientsPagePersistence_Test()
         {
             //Arrange
-            IPersistenceService persistenceService = new PersistenceService();
+            IPersistenceService persistenceService = new PersistenceService(_commands);
 
             //Act
             string path = await persistenceService.PersistData(new Uri("http://www.eloquentix.com/case_studies_and_clients"), "some css data");
@@ -79,13 +86,7 @@ namespace WebCrawler.Services.Tests
         {
             //Arrange
             CommandsInterpreter interpreter = new CommandsInterpreter();
-            Commands expectedCommands = new Commands()
-            {
-                Address = "http://www.eloquentix.com/",
-                Destination = @"C:\Users\dan.diaconu\source\repos\WebCrawler\WebCrawlerTests\bin\Debug",
-                AllowExternal = true,
-                Depth = 2
-            };
+            Commands expectedCommands = _commands;
             string stringCommand = "--allowExternal --address:http://www.eloquentix.com/ --destination:C:\\Users\\dan.diaconu\\source\\repos\\WebCrawler\\WebCrawlerTests\\bin\\Debug --depth:2";
             string[] actualCommand = stringCommand.Split(' ');
 

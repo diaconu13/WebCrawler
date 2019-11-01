@@ -10,10 +10,12 @@ namespace WebCrawler.Services
     public class CrawlerService : ICrawlerService
     {
         private readonly IPersistenceService _persistenceService;
+        private readonly Commands _commands;
 
-        public CrawlerService(IPersistenceService persistenceService)
+        public CrawlerService(IPersistenceService persistenceService, Commands commands)
         {
             _persistenceService = persistenceService;
+            _commands = commands;
         }
 
         public async Task GetUrlContents(Uri uri)

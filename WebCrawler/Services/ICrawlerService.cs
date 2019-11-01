@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using WebCrawler.Helpers;
 
 namespace WebCrawler.Services
 {
