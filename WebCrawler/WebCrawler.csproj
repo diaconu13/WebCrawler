@@ -71,6 +71,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Commands.cs" />
+    <Compile Include="Helpers\CommandNames.cs" />
     <Compile Include="Helpers\CommandsInterpreter.cs" />
     <Compile Include="Helpers\ElementsHelpers.cs" />
     <Compile Include="Services\CrawlerService.cs" />

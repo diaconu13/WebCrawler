@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using WebCrawler.Common;
 using WebCrawler.Helpers;
 
 namespace WebCrawler.Services.Tests
@@ -18,10 +19,10 @@ namespace WebCrawler.Services.Tests
             // not sure yet what needs to be prepared before tests run
             this._commands = new Commands()
             {
+                Depth = 2,
+                AllowExternal = true,
                 Address = "http://www.eloquentix.com/",
                 Destination = @"C:\Users\dan.diaconu\source\repos\WebCrawler\WebCrawlerTests\bin\Debug",
-                AllowExternal = true,
-                Depth = 2
             };
         }
 

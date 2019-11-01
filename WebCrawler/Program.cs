@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using WebCrawler.Common;
 using WebCrawler.Helpers;
 using WebCrawler.Services;
 

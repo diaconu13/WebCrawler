@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using WebCrawler.Common;
 using WebCrawler.Helpers;
 
 namespace WebCrawler.Services

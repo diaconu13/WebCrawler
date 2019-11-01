@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using WebCrawler.Common;
 
 namespace WebCrawler.Helpers
 {
-    public class Commands
-    {
-        public bool AllowExternal { get; set; }
-        public int Depth { get; set; }
-        public string Destination { get; set; }
-        public string Address { get; set; }
-    }
     public class CommandsInterpreter
     {
         public Commands ParseCommand(string[] args)
@@ -72,16 +65,5 @@ namespace WebCrawler.Helpers
 
             return commands;
         }
-    }
-
-    public struct CommandNames
-    {
-        public const char Separator = ':';
-        public const string Identifier = "--";
-        public const string Depth = "--depth";
-        public const string Destination = "--destination";
-        public const string Address = "--address";
-        public const string AllowExternal = "--allowExternal";
-
     }
 }
