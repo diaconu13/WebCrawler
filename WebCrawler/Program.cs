@@ -15,10 +15,8 @@ namespace WebCrawler
 
             CommandsInterpreter interpreter = new CommandsInterpreter();
             Commands commands = interpreter.ParseCommand(args);
-            
-            Uri uri = new Uri(commands.Address);
 
-            if (!uri.IsAbsoluteUri)
+            if (!commands.Address.IsAbsoluteUri)
             {
                 Console.WriteLine("The uri format is not correct. Must be of form http(s)://www.domain.com");
                 Console.WriteLine("Nothing was Done!");
@@ -33,9 +31,9 @@ namespace WebCrawler
 
             ICrawlerService crawlerService = serviceProvider.GetService<ICrawlerService>();
             
-            await crawlerService.GetUrlContents(uri);
+            await crawlerService.GetUrlContents(commands.Address);
 
-            Console.WriteLine($"Downloading from {uri.Host}...");
+            Console.WriteLine($"Downloading from {commands.Address.Host}...");
 
             Console.WriteLine("Done!");
             Console.ReadLine();

@@ -21,7 +21,7 @@ namespace WebCrawler.Services.Tests
             {
                 Depth = 2,
                 AllowExternal = true,
-                Address = "http://www.eloquentix.com/",
+                Address = new Uri("http://www.eloquentix.com/"),
                 Destination = @"C:\Users\dan.diaconu\source\repos\WebCrawler\WebCrawlerTests\bin\Debug",
             };
         }
@@ -96,9 +96,9 @@ namespace WebCrawler.Services.Tests
 
             //Assert
             Assert.AreEqual(expectedCommands.AllowExternal, result.AllowExternal);
+            Assert.AreEqual(expectedCommands.Destination, result.Destination);
             Assert.AreEqual(expectedCommands.Address, result.Address);
             Assert.AreEqual(expectedCommands.Depth, result.Depth);
-            Assert.AreEqual(expectedCommands.Destination, result.Destination);
         }
 
         [TestCleanup]

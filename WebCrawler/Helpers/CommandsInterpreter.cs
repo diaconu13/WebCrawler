@@ -54,10 +54,16 @@ namespace WebCrawler.Helpers
 
                             break;
                         case CommandNames.Destination:
+
                             commands.Destination = value;
                             break;
                         case CommandNames.Address:
-                            commands.Address = value;
+
+                            if (Uri.TryCreate(value, UriKind.Absolute, out var address))
+                            {
+                                commands.Address = address;
+                            }
+                            
                             break;
                     }
                 }

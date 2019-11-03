@@ -1,10 +1,12 @@
-﻿namespace WebCrawler.Common
+﻿using System;
+
+namespace WebCrawler.Common
 {
     public class Commands
     {
         public int Depth { get; set; }
 
-        public string Address { get; set; }
+        public Uri Address { get; set; }
 
         public bool AllowExternal { get; set; }
 
