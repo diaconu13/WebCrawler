@@ -8,8 +8,10 @@ namespace WebCrawler
 
         public string Name { get; set; }
 
+        public string OriginalRow { get; set; }
 
         private ReferenceTypeEnum _referenceType;
+
         public ReferenceTypeEnum ReferenceType
         {
             get
@@ -20,10 +22,11 @@ namespace WebCrawler
             set => _referenceType = value;
         }
 
-        public References(Uri url, string name)
+        public References(Uri url, string name, string row)
         {
             Url = url;
             Name = name;
+            OriginalRow = row;
         }
 
         private Boolean IsExternalUrl(Uri url)

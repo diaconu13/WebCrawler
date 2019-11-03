@@ -27,46 +27,51 @@ namespace WebCrawler.Helpers
 
         private static Commands ParseTwoSegmentsCommands(string argument, Commands commands)
         {
-            if (argument.Contains(":"))
+            if (!argument.Contains(":"))
             {
-                string[] segments = argument.Split(CommandNames.Separator);
-                if (segments.Length > 1)
-                {
-                    string name = segments[0];
-                    // this os one way of getting the value ... but we can do better :)
-                    //var startIndex = argument.IndexOf(CommandNames.Separator)+1;
-                    //string value = argument.Substring(startIndex,argument.Length-startIndex);
+                return commands;
+            }
 
-                    string value = string.Join(":", segments.Skip(1));
+            string[] segments = argument.Split(CommandNames.Separator);
 
-                    switch (name)
+            if (segments.Length <= 1)
+            {
+                return commands;
+            }
+
+            string name = segments[0];
+            // this os one way of getting the value ... but we can do better :)
+            //var startIndex = argument.IndexOf(CommandNames.Separator)+1;
+            //string value = argument.Substring(startIndex,argument.Length-startIndex);
+            //like this 
+            string value = string.Join(":", segments.Skip(1));
+
+            switch (name)
+            {
+                case CommandNames.Depth:
+
+                    if (int.TryParse(value, out var number))
                     {
-                        case CommandNames.Depth:
-
-                            if (int.TryParse(value, out var number))
-                            {
-                                commands.Depth = number;
-                            }
-                            else
-                            {
-                                Console.WriteLine($"Parameter named {name} value is not a int number");
-                            }
-
-                            break;
-                        case CommandNames.Destination:
-
-                            commands.Destination = value;
-                            break;
-                        case CommandNames.Address:
-
-                            if (Uri.TryCreate(value, UriKind.Absolute, out var address))
-                            {
-                                commands.Address = address;
-                            }
-                            
-                            break;
+                        commands.Depth = number;
                     }
-                }
+                    else
+                    {
+                        Console.WriteLine($"Parameter named {name} value is not a int number");
+                    }
+
+                    break;
+                case CommandNames.Destination:
+
+                    commands.Destination = value;
+                    break;
+                case CommandNames.Address:
+
+                    if (Uri.TryCreate(value, UriKind.Absolute, out var address))
+                    {
+                        commands.Address = address;
+                    }
+                            
+                    break;
             }
 
             return commands;

@@ -7,7 +7,7 @@ using WebCrawler.Helpers;
 
 namespace WebCrawler.Services.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class PersistenceServiceTests
     {
         private Commands _commands;
@@ -26,7 +26,7 @@ namespace WebCrawler.Services.Tests
             };
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task PersistenceService_PersistData_Root_Page_Persistence_Test()
         {
             //Arrange
@@ -39,56 +39,64 @@ namespace WebCrawler.Services.Tests
             Assert.IsTrue(path.EndsWith(@"WebCrawlerTests\bin\Debug\www.eloquentix.com\index.html"));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task PersistenceService_PersistData_Favicon_Local_Persistence_Test()
         {
-           
+
             //Arrange
             IPersistenceService persistenceService = new PersistenceService(_commands);
 
             //Act
-            string path = await persistenceService.PersistData(new Uri("http://www.eloquentix.com/favicon.png"), "some html data");
-            
+            string path =
+                await persistenceService.PersistData(new Uri("http://www.eloquentix.com/favicon.png"),
+                    "some html data");
+
             //Assert
             Assert.IsTrue(path.EndsWith(@"WebCrawlerTests\bin\Debug\www.eloquentix.com\favicon.png"));
         }
 
 
-        [TestMethod()]
+        [TestMethod]
         public async Task PersistenceService_PersistData_CssOnFoldersTree_Local_Persistence_Test()
         {
             //Arrange
             IPersistenceService persistenceService = new PersistenceService(_commands);
 
             //Act
-            string path = await persistenceService.PersistData(new Uri("http://www.eloquentix.com/ui/stylesheets/compiled.css"), "some css data");
+            string path =
+                await persistenceService.PersistData(new Uri("http://www.eloquentix.com/ui/stylesheets/compiled.css"),
+                    "some css data");
 
             //Assert
             Assert.IsTrue(path.EndsWith(@"WebCrawlerTests\bin\Debug\www.eloquentix.com\ui\stylesheets\compiled.css"));
         }
 
 
-        [TestMethod()]
+        [TestMethod]
         public async Task PersistenceService_PersistData_CaseStudiesAndClientsPagePersistence_Test()
         {
             //Arrange
             IPersistenceService persistenceService = new PersistenceService(_commands);
 
             //Act
-            string path = await persistenceService.PersistData(new Uri("http://www.eloquentix.com/case_studies_and_clients"), "some css data");
+            string path =
+                await persistenceService.PersistData(new Uri("http://www.eloquentix.com/case_studies_and_clients"),
+                    "some css data");
 
             //Assert
-            Assert.IsTrue(path.EndsWith(@"WebCrawlerTests\bin\Debug\www.eloquentix.com\case_studies_and_clients\index.html"));
+            Assert.IsTrue(
+                path.EndsWith(@"WebCrawlerTests\bin\Debug\www.eloquentix.com\case_studies_and_clients\index.html"));
         }
 
 
-        [TestMethod()]
+        [TestMethod]
         public void CommandsInterpreter_ParseCommand_ParseAllCommands_Test()
         {
             //Arrange
             CommandsInterpreter interpreter = new CommandsInterpreter();
             Commands expectedCommands = _commands;
-            string stringCommand = "--allowExternal --address:http://www.eloquentix.com/ --destination:C:\\Users\\dan.diaconu\\source\\repos\\WebCrawler\\WebCrawlerTests\\bin\\Debug --depth:2";
+            string stringCommand =
+                "--allowExternal --address:http://www.eloquentix.com/ --destination:C:\\Users\\dan.diaconu\\source\\repos\\WebCrawler\\WebCrawlerTests\\bin\\Debug --depth:2";
             string[] actualCommand = stringCommand.Split(' ');
 
             //Act
@@ -99,6 +107,25 @@ namespace WebCrawler.Services.Tests
             Assert.AreEqual(expectedCommands.Destination, result.Destination);
             Assert.AreEqual(expectedCommands.Address, result.Address);
             Assert.AreEqual(expectedCommands.Depth, result.Depth);
+        }
+
+        //TDD way, first we make a test that files then we make it work
+        [TestMethod]
+        public void CrawlerService_MakeUrlAccessibleFromLocal__Test()
+        {
+            //Arrange
+            IPersistenceService persistenceService = new PersistenceService(_commands);
+            ICrawlerService crawlerService = new CrawlerService(persistenceService, _commands);
+            var originalRow =
+                $"<a class=\"post-link\" href=\"/code/2014/12/01/introducing_monifu.html\" src=\"/code/2014/12/01/introducing_monifu.html\">Introducing Monifu</a>";
+            string result = crawlerService.MakeUrlAccessibleFromLocal(originalRow);
+
+            //Act
+            var expectedPath = _commands.Destination + "/code/2014/12/01/introducing_monifu.html".Replace("/", "\\");
+
+            //Assert
+            var expected = $"<a class=\"post-link\" href=\"{expectedPath}\" src=\"{expectedPath}\">Introducing Monifu</a>";
+            Assert.AreEqual(expected, result);
         }
 
         [TestCleanup]

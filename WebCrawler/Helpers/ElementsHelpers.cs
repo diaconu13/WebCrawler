@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MoreLinq.Extensions;
+using WebCrawler.Common;
 
 namespace WebCrawler.Helpers
 {
@@ -9,7 +10,9 @@ namespace WebCrawler.Helpers
     {
         public static bool ElementHasReference(string element)
         {
-            return element.Length > 0 && element.Contains(" href=") || element.Contains(" src=");
+            //make sure the attribute has form " attr="
+            return element.Length > 0 && Constants.ReferenceAttributes.Any(a => element.Contains(" " + a + "="));
+            //return element.Length > 0 && element.Contains(" href=") || element.Contains(" src=");
         }
 
         /// <summary>
@@ -42,7 +45,7 @@ namespace WebCrawler.Helpers
             List<References> references = new List<References>();
             if (!ElementHasReference(row)) return references;
 
-            //todo this is not very accurate since it assume that will be only two items in list all the time ... (src || href)="value"
+            //todo this is not very accurate since it assume that will be only two items in list all the time ... (src || href)="value".Is this wrong ? ;)
             //most of the time is ok ... but still
             //todo here in order for the site to work offline the relative path must be replaced with the absolute local path
             // I am not sure if this is desired ... this should be clarified. 
@@ -52,6 +55,7 @@ namespace WebCrawler.Helpers
             
             var sources = row.Split(' ').ToList().Select(s => s.Split('=')).ToList();
             var itemsWithReferences = sources.Find(l => l.Any(s => s.Contains("href") || s.Contains("src")));
+
             if (itemsWithReferences.Length % 2 == 0)
             {
                 var name = itemsWithReferences[0];
@@ -60,7 +64,7 @@ namespace WebCrawler.Helpers
                 try
                 {
                     var uri = new Uri(url, UriKind.RelativeOrAbsolute);
-                    references.Add(new References(uri, name));
+                    references.Add(new References(uri, name,row));
                 }
                 catch (Exception e)
                 {

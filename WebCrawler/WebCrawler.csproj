@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Commands.cs" />
+    <Compile Include="Common\Constants.cs" />
     <Compile Include="Helpers\CommandNames.cs" />
     <Compile Include="Helpers\CommandsInterpreter.cs" />
     <Compile Include="Helpers\ElementsHelpers.cs" />

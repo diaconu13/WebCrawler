@@ -31,7 +31,7 @@ namespace WebCrawler
 
             ICrawlerService crawlerService = serviceProvider.GetService<ICrawlerService>();
             
-            await crawlerService.GetUrlContents(commands.Address);
+            await crawlerService.DownloadFromUrl(commands.Address);
 
             Console.WriteLine($"Downloading from {commands.Address.Host}...");
 

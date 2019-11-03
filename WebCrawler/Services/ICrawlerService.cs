@@ -3,8 +3,9 @@ using System.Threading.Tasks;
 
 namespace WebCrawler.Services
 {
-    interface ICrawlerService
+    public interface ICrawlerService
     {
-        Task GetUrlContents(Uri uri);
+        Task DownloadFromUrl(Uri uri);
+        string MakeUrlAccessibleFromLocal(string originalRow);
     }
 }
