@@ -1,11 +1,11 @@
 # WebCrawler
 
 This is a .Net C# Web Crawler made to demonstrate some C# skills
-Note: This is not made to be a and to end produc , not yet at least.
+Note: This is not made to be a and to end product , not yet at least.
 
 ## Project requirements
 
-Create C # app consoles that crawl to a website and save it to disk. The main requirements are:
+Create C # app console that crawls to a website and save it to disk. The main requirements are:
 
 1. You can configure it how deep to navigate
 2. Be able to see as much of the locally downloaded website when there is no internet connection
