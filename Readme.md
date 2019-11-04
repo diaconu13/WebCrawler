@@ -50,6 +50,7 @@ To be continued........
 To be detailed
 
 https://github.com/diaconu13/WebCrawler/blob/master/architecture.png
+![Screenshot](architecture.png)
 
 ## Getting Started
 
