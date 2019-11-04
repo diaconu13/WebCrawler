@@ -5,25 +5,19 @@ Note: This is not made to be a and to end produc , not yet at least.
 
 ## Project requirements
 
-Să creezi console app in C# care să facă crawl la un
-website și să-l salveze pe disk. Principalele condiții sunt:
+Create C # app consoles that crawl to a website and save it to disk. The main requirements are:
 
-1. Să-l poți configura cât de adânc să navigheze
-2. Să se poată vedea cât mai mult din website-ul descărcat local când
-   nu există o conexiune la internet
-3. Să nu descarce tot internetul — să se limiteze doar la link-urile
-   de sub domeniul specificat ca argument când se execută comanda
-4. Proiectul să conțină un README file în care să descrii în limba
-   engleză arhitectura/structura proiectului
+1. You can configure it how deep to navigate
+2. Be able to see as much of the locally downloaded website when there is no internet connection
+   Do not download the entire Internet - just limit the links below the specified domain as an argument when executing the command
+3. The project should contain a README file describing the architecture / structure of the project in English
 
-Tema e free-style — faci cum vrei tu și cu ce vrei tu in C#, dar fara sa folosesti un lib de crawling. Vrem să vedem cum gândești arhitectura și cum structurezi
-codul când n-ai restricții, etc. Dacă ai idei extra sau vrei să schimbi
-ceva pentru că ți se pare mai bine, go for it.
+The theme is free-style - do what you want and what you want in C #, but without using a crawling lib. We want to see how you think about architecture and how you structure the code when you have no restrictions, etc. If you have extra ideas or want to change something because it looks better, go for it.
 
-Bonus points pentru:
+Bonus points for:
 
-1. Execuție paralelă
-2. Teste
+1. Parallel execution
+2. Tests
 
 ## How much was done
 
@@ -34,16 +28,14 @@ Bonus points pentru:
 4. Work in progress
 
 Bonuses
-
 1. The project uses Async Await and after the first scan is done and all references(links) are optained they are downloaded in parallel. Most of the work is done in a non blocking way.
 2. The project has unit Tests, see WebCrawler done with MSUnit Tests, 5 tests for now to test the Commands interpretation and DIsk persistence.
-
-To be continued........
 
 ## To do
 
 1. Convert all links to absolute so all site scripts and resources can be loaded from disk.
-2. Commands are implemented but functionality nedds to be completed.
+2. Commands are implemented but functionality nedds to be completed
+   By functionlaity it is meant that the dephness is not yet controlled (might download the internet :) ) and the downloaded referecences such as .css and .js is not loaded in index.html page links needs to be absolute to local system.
 
 ## Architecture
 
