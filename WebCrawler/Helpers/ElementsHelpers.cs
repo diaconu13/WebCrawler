@@ -22,7 +22,7 @@ namespace WebCrawler.Helpers
             const string src = " src=";
             const string href = " href=";
 
-            //this could be done simpler with arrays, but is done like this to demonstrate that I know about IEnumerable, Lists and all that :)
+            //this could be done simpler with arrays, but is done like this to demonstrate IEnumerable, Lists, etc.
             IEnumerable<List<References>> allReferences = result.Select(FindReference);
 
             List<References> flatList = new List<References>();

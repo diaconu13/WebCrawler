@@ -10,11 +10,13 @@ namespace WebCrawler.Services
 {
     public class CrawlerService : ICrawlerService
     {
+        private readonly Dictionary<string, string> _downloadedUris;
         private readonly IPersistenceService _persistenceService;
         private readonly Commands _commands;
 
         public CrawlerService(IPersistenceService persistenceService, Commands commands)
         {
+            _downloadedUris = new Dictionary<string, string>(); ;
             _persistenceService = persistenceService;
             _commands = commands;
         }
@@ -23,6 +25,7 @@ namespace WebCrawler.Services
         {
             try
             {
+                Console.WriteLine("Downloading from " + uri.ToString());
                 //make sure content is not compressed
                 HttpClientHandler httpHandler = new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate };
 
@@ -34,7 +37,7 @@ namespace WebCrawler.Services
                     response.EnsureSuccessStatusCode();
 
                     string result = await response.Content.ReadAsStringAsync();
-
+                    
                     await _persistenceService.PersistData(uri, result);
 
                     // in order for the paths to be corrected as absolute this should be done before _persistenceService.PersistData so data will be correctly persisted once
@@ -60,6 +63,16 @@ namespace WebCrawler.Services
 
         private async Task LoadResource(References reference, Uri url)
         {
+            // is much safer to use uri.ToString() instead of just OriginalString,
+            // please have a look at the bottom of this file to see what that is actually means(decompiled ToString from Uri.cs)
+            if (_downloadedUris.ContainsKey(reference.Url.ToString()))
+            {
+                Console.WriteLine("skipped " + reference.Url);
+                return;
+            }
+
+            _downloadedUris.Add(reference.Url.ToString(), "");
+
             switch (reference.ReferenceType)
             {
                 case ReferenceTypeEnum.Absolute:
@@ -68,9 +81,11 @@ namespace WebCrawler.Services
                 case ReferenceTypeEnum.Relative:
                     if (!HasAbsoluteUrl(reference) && IsNotNavigationLink(reference))//prevent same \
                     {
+                        Console.WriteLine(url);
                         //SanitizeUrl(reference);
                         //try to combine and get one nice absolute url
                         var uri = SanitizeUri(reference, url);
+                        //recursive call to load all resources 
                         await GetUrlContents(uri);
                     }
                     break;
@@ -81,7 +96,7 @@ namespace WebCrawler.Services
 
         private Uri SanitizeUri(References reference, Uri url)
         {
-                string absoluteUri;
+            string absoluteUri;
             if (HasAbsoluteUrl(reference))
             {
                 absoluteUri = url.Scheme + "://" + url.Host + url.AbsolutePath;
@@ -90,7 +105,7 @@ namespace WebCrawler.Services
             {
                 absoluteUri = url.Scheme + "://" + url.Host + reference.Url.OriginalString;
             }
-           
+
             //absoluteUri = absoluteUri.Remove(absoluteUri.LastIndexOf("//"), 1);
             return new Uri(absoluteUri, UriKind.RelativeOrAbsolute);
         }
@@ -114,3 +129,25 @@ namespace WebCrawler.Services
         }
     }
 }
+/*
+Please se Line 62.
+decompiled Uri.cs using Resharper navigation to decompiled code, 
+this is very very use-full to understand things that are not so obvious
+https://www.jetbrains.com/resharper/
+
+[__DynamicallyInvokable]
+[SecurityPermission(SecurityAction.InheritanceDemand, Flags = SecurityPermissionFlag.Infrastructure)]
+public override string ToString()
+{
+    if (this.m_Syntax == null)
+    {
+        if (!this.m_iriParsing || !this.InFact(Uri.Flags.HasUnicode))
+            return this.OriginalString;
+        return this.m_String;
+    }
+    this.EnsureUriInfo();
+        if (this.m_Info.String == null)
+    this.m_Info.String = !this.Syntax.IsSimple ? this.GetParts(UriComponents.AbsoluteUri, UriFormat.SafeUnescaped) : this.GetComponentsHelper(UriComponents.AbsoluteUri, (UriFormat)32767);
+    return this.m_Info.String;
+}
+ */

@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebCrawler.Common;
-using WebCrawler.Helpers;
 
 namespace WebCrawler.Services
 {
@@ -29,7 +28,9 @@ namespace WebCrawler.Services
             string fileName = CalculateFileName(uri);
 
             var path = Path.Combine(destination.FullName, fileName);
-            File.WriteAllText(path, result);
+
+            //this is te most time consuming operation, since it deals with the file system
+            await Task.Run(() => File.WriteAllText(path, result));
             return path;
         }
 
@@ -51,12 +52,13 @@ namespace WebCrawler.Services
                 string foldersStructure = uri.AbsolutePath.Remove(lastIndexOf, uri.AbsolutePath.Length - lastIndexOf);
                 return Directory.CreateDirectory(uri.DnsSafeHost + foldersStructure);
             }
+
             var isNotRoot = uri.AbsolutePath.Length > 1;
             var isAFileInRoot = IsAFileInRoot(uri);
 
             if (isNotRoot && isAFileInRoot)
             {
-                //AbsoluteUri = "http://www.eloquentix.com/case_studies_and_clients/"
+                // AbsoluteUri = "http://www.eloquentix.com/case_studies_and_clients/"
                 // http://www.eloquentix.com/jobs"
                 // this is a link to a html page
 
